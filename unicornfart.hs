@@ -1,14 +1,22 @@
+-- rain.hs: A haskell based rainbow table generator
+--
+-- Originally Copyright (C) 2014 Matt Davis (enferex)
+--
+-- This is free software, fork it and have at it!
+--
 import Data.Bits(xor)
 import Data.Digest.Pure.MD5(md5)
 import Data.ByteString.Lazy.Internal(ByteString, packChars)
 import System.Environment(getArgs)
 
+-- TODO: Add show override
 type Hash = String
 data Chain = Chain String Hash deriving (Show)
 
 -- Reduction1: Given a hashed string, return the first three chars 
+-- TODO: Add more reductions
 reduce1 :: Hash -> String
-reduce1 h = take 5 h
+reduce1 h = take 16 h
 
 -- List of reduction functions (one per link in the chain)
 reductions :: [Hash -> String]
@@ -29,8 +37,9 @@ buildChain :: String -> Chain
 buildChain p = (Chain p $ reduce (hash' p) reductions)
 
 -- Given a plaintext, mutate it and return a new plaintext
+-- TODO: Implement better routine
 nextPlaintext :: String -> String
-nextPlaintext p = map succ p -- TODO: Implement better routine
+nextPlaintext p = map succ p
 
 -- Generates a list of 'n' chains (e.g., a rainbow table)
 -- Initially 'c' is [] and represents the [Chain] of generate chains
@@ -40,4 +49,4 @@ buildTable n p c = buildTable (n-1) (nextPlaintext p) $ (buildChain p) : c
 
 main = do 
     args <- getArgs
-    mapM print $ buildTable 10 (args !! 0) []
+    mapM print $ buildTable 5 (args !! 0) []
