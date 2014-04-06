@@ -1,22 +1,23 @@
 import Data.Bits(xor)
-import System.Environment
+import Data.Digest.Pure.MD5(md5)
+import Data.ByteString.Lazy.Internal(ByteString, packChars)
+import System.Environment(getArgs)
 
-type Hash = Int
-type Chain = (String, Hash)
+type Hash = String
+data Chain = Chain String Hash deriving (Show)
 
-
-md5 :: String -> Hash
-md5 s = 0xdeadbeef `xor` (read s)
+hash' :: String -> String
+hash' = show . md5 . packChars
 
 reduce :: Hash -> String
-reduce hash = take 3 $ show hash
+reduce h = take 3 $ show h
 
 buildChain :: String -> Chain
-buildChain plain = (plain, md5 $ reduce $ md5 plain)
+buildChain plain = (Chain plain (hash' $ reduce $ hash' plain))
 
 buildTable :: String -> [Chain]
 buildTable plain = buildChain plain : []
 
 main = do 
     args <- getArgs
-    mapM putStrLn [ p ++ "-->" ++ show h | (p, h) <- buildTable $ args !! 0]
+    mapM print $ buildTable $ args !! 0
