@@ -6,17 +6,31 @@ import System.Environment(getArgs)
 type Hash = String
 data Chain = Chain String Hash deriving (Show)
 
-hash' :: String -> String
+-- Reduction1: Given a hashed string, return the first three chars 
+reduce1 :: Hash -> String
+reduce1 h = take 3 h
+
+-- List of reduction functions (one per link in the chain)
+reductions :: [Hash -> String]
+reductions  = [reduce1]
+
+-- Apply reduction functions to given plain text
+reduce :: Hash -> [Hash -> String] -> String
+reduce p [] = p
+reduce p (r:rs) = reduce (r (hash' p)) rs
+
+-- Hash a plaintext string
+hash' :: String -> Hash
 hash' = show . md5 . packChars
 
-reduce :: Hash -> String
-reduce h = take 3 $ show h
-
+-- Create a chain where the startpoint is the plaintext and endpoint, the
+-- reduced hash value starting from that plaintext.
 buildChain :: String -> Chain
-buildChain plain = (Chain plain (hash' $ reduce $ hash' plain))
+buildChain p = (Chain p $ reduce (hash' p) reductions)
 
+-- Generates a list of chains (e.g., a rainbow table)
 buildTable :: String -> [Chain]
-buildTable plain = buildChain plain : []
+buildTable p = buildChain p : []
 
 main = do 
     args <- getArgs
