@@ -1,4 +1,4 @@
--- rain.hs: A haskell based rainbow table generator
+-- unicornfart.hs: A haskell based rainbow table generator
 --
 -- Originally Copyright (C) 2014 Matt Davis (enferex)
 --
