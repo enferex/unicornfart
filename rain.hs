@@ -8,7 +8,7 @@ data Chain = Chain String Hash deriving (Show)
 
 -- Reduction1: Given a hashed string, return the first three chars 
 reduce1 :: Hash -> String
-reduce1 h = take 3 h
+reduce1 h = take 5 h
 
 -- List of reduction functions (one per link in the chain)
 reductions :: [Hash -> String]
@@ -28,10 +28,16 @@ hash' = show . md5 . packChars
 buildChain :: String -> Chain
 buildChain p = (Chain p $ reduce (hash' p) reductions)
 
--- Generates a list of chains (e.g., a rainbow table)
-buildTable :: String -> [Chain]
-buildTable p = buildChain p : []
+-- Given a plaintext, mutate it and return a new plaintext
+nextPlaintext :: String -> String
+nextPlaintext p = map succ p -- TODO: Implement better routine
+
+-- Generates a list of 'n' chains (e.g., a rainbow table)
+-- Initially 'c' is [] and represents the [Chain] of generate chains
+buildTable :: Int -> String -> [Chain] -> [Chain]
+buildTable 0 _ c = c
+buildTable n p c = buildTable (n-1) (nextPlaintext p) $ (buildChain p) : c
 
 main = do 
     args <- getArgs
-    mapM print $ buildTable $ args !! 0
+    mapM print $ buildTable 10 (args !! 0) []
