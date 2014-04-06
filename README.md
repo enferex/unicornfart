@@ -8,11 +8,13 @@ This software is not complete but is a fair start.
 Depends
 -------
 Depends on PureMD5.  This can be obtained via cabal
+
     cabal install pureMD5
 
 Build
 -----
 Compile with your choice of Haskell compiler, for instance:
+
     ghc unicornfart.hs
 
 Run
