@@ -4,7 +4,7 @@
 --
 -- This is free software, fork it and have at it!
 --
-import Data.Bits(xor)
+import Data.Char(chr, ord)
 import Data.Digest.Pure.MD5(md5)
 import Data.ByteString.Lazy.Internal(ByteString, packChars)
 import System.Environment(getArgs)
@@ -38,10 +38,20 @@ hash' = show . md5 . packChars
 buildChain :: String -> Chain
 buildChain p = (Chain p $ reduce (hash' p) reductions)
 
+-- Add with carry (carry starting with value of c)
+addCarry :: Int -> [Int] -> [Int]
+addCarry c (x:[]) = (x + c) `mod` 127 : []
+addCarry c (x:xs) = ((x + c) `mod` 127) : (addCarry adder xs)
+    where adder = fromEnum (x + c == 127)
+
 -- Given a plaintext, mutate it and return a new plaintext
 -- TODO: Implement better routine
+--
+-- 1) convert [Char] to [Int]
+-- 2) Increment and carry
 nextPlaintext :: String -> String
-nextPlaintext p = map succ p
+nextPlaintext p = reverse $ map chr $ vals
+    where vals = addCarry 1 $ reverse $ map ord p
 
 -- Generates a list of 'n' chains (e.g., a rainbow table)
 -- Initially 'c' is [] and represents the [Chain] of generate chains
