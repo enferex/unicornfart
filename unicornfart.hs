@@ -9,9 +9,11 @@ import Data.Digest.Pure.MD5(md5)
 import Data.ByteString.Lazy.Internal(ByteString, packChars)
 import System.Environment(getArgs)
 
--- TODO: Add show override
 type Hash = String
-data Chain = Chain String Hash deriving (Show)
+data Chain = Chain String Hash
+
+instance Show Chain where
+    show (Chain p h) = "<" ++ p ++ ", " ++ h ++ ">"
 
 -- Reduction1: Given a hashed string, return the first three chars 
 -- TODO: Add more reductions
