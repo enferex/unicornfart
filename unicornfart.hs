@@ -61,4 +61,4 @@ buildTable n p c = buildTable (n-1) (nextPlaintext p) $ (buildChain p) : c
 
 main = do 
     args <- getArgs
-    mapM print $ buildTable 5 (args !! 0) []
+    mapM_ print $ buildTable 5 (args !! 0) []
